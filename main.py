@@ -1,9 +1,15 @@
 """Copy the prepared competition image to the requested output directory."""
 
 import os
-import shutil
+from pathlib import Path
 
 
-output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-os.makedirs(output_dir, exist_ok=True)
-shutil.copyfile("entry.png", os.path.join(output_dir, "entry.png"))
+def main():
+    source = Path(__file__).resolve().parent / "entry.png"
+    output_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "entry.png").write_bytes(source.read_bytes())
+
+
+if __name__ == "__main__":
+    main()

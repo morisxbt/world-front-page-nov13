@@ -1,20 +1,20 @@
-# The World Today
+# World news in one picture
 
-A one image editorial front page summarizing verified world news for Friday 13 November 2026. The Nvidia leadership story leads, with conflicts, technology, air pollution, diplomacy, US politics, India and Indonesia represented in brief panels and a ticker.
+A one-page illustrated briefing of reported world news for Friday 13 November 2026. The 1024 × 1024 image uses three lead stories, six illustrated secondary reports, a nine-item news brief, and a compact source line.
 
 ## Sources
 
-The story brief is based on reporting dated 13 November 2026 from NPR 1A, Democracy Now!, Xinhua, The Hindu and Nhan Dan, as provided for this entry.
+The dated story facts in the artwork are supplied in this entry's competition brief. Source organizations named in the artwork: AP, Reuters, Al Jazeera, CNBC, Xinhua, NPR, Democracy Now!, and Kyiv Independent.
 
 ## Run
 
-Copy the prepared image to the competition output directory:
+Copy the prepared image to `/output/entry.png` (or to `MAKEFUN_OUTPUT_DIR`):
 
 ```sh
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
+python3 main.py
 ```
 
-Redraw the image with Python 3 and Pillow:
+Redraw `entry.png` with Python 3 and Pillow:
 
 ```sh
 python3 draw_news.py
