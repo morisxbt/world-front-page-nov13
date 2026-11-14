@@ -88,20 +88,31 @@ def _scene_art(kind, x, y, w, h):
     d.rounded_rectangle((x, y, x + w, y + h), radius=9, fill=palettes[kind])
     cx, cy = x + w // 2, y + h // 2
     if kind == "plane":
-        # Airport board with four named routes; parked aircraft and STOP marker.
-        d.rounded_rectangle((x+8,y+7,x+w-8,y+57),radius=5,fill="#1d3444")
+        # Three large airport-board rows over a detailed parked airliner and runway.
+        d.rounded_rectangle((x+8,y+2,x+w-8,y+59),radius=6,fill="#1d3444")
         rows=(("NEW YORK","CANCELLED"),("CHICAGO","DELAYED"),
-              ("ATLANTA","CANCELLED"),("DENVER","DELAYED"))
+              ("ATLANTA","CANCELLED"))
         for i,(city,status) in enumerate(rows):
-            yy=y+11+i*11
-            txt(city,x+17,yy,9,"#fff4d7",True)
-            txt(status,x+113,yy,9,"#f4a54a" if status=="DELAYED" else "#ff7165",True)
-            if i<3:
-                d.line((x+13,yy+10,x+186,yy+10),fill="#405564",width=1)
-        px=x+w-91; py=y+75
-        d.polygon([(px-48,py+5),(px-5,py-1),(px+15,py-20),(px+22,py-19),(px+15,py-1),(px+44,py+3),(px+48,py+8),(px+15,py+8),(px+8,py+20),(px+2,py+20),(px+1,py+8),(px-48,py+11)],fill="#385c70")
-        d.ellipse((x+w-43,y+h-35,x+w-13,y+h-5),fill=RED)
-        txt("STOP",x+w-28,y+h-20,9,"white",True,"mm")
+            yy=y+8+i*15
+            txt(city,x+20,yy,13,"#fff4d7",True)
+            txt(status,x+134,yy,13,"#f4b54a" if status=="DELAYED" else "#ff7165",True)
+            if i<len(rows)-1:
+                d.line((x+15,yy+14,x+w-16,yy+14),fill="#405564",width=1)
+        # Runway with dashed centreline; broad swept wings, fuselage, tail and windows.
+        ry=y+h-12
+        d.polygon([(x+71,ry-4),(x+w-12,ry-4),(x+w-3,ry+13),(x+60,ry+13)],fill="#c2c9c8")
+        for dash in range(x+84,x+w-18,20):
+            d.line((dash,ry+4,dash+8,ry+4),fill="#fffdf8",width=2)
+        px=x+w-87; py=y+h-19
+        d.polygon([(px-51,py-4),(px-8,py-7),(px+3,py-30),(px+11,py-30),(px+9,py-7),(px+26,py-7),(px+42,py-21),(px+48,py-20),(px+41,py-5),(px+59,py-3),(px+59,py+3),(px+11,py+5),(px+8,py+18),(px+2,py+18),(px+1,py+5),(px-51,py+3)],fill="#385c70")
+        d.line((px-42,py-1,px+42,py-1),fill="#6e8996",width=2)
+        for wx in range(px-29,px+27,10):
+            d.ellipse((wx,py-2,wx+4,py+1),fill="#e6e5d9")
+        d.ellipse((px-16,py+7,px-10,py+13),fill="#263b48")
+        d.ellipse((px+22,py+7,px+28,py+13),fill="#263b48")
+        d.ellipse((x+16,y+h-43,x+42,y+h-17),fill=RED)
+        d.line((x+29,y+h-17,x+29,ry+2),fill="#667883",width=2)
+        txt("STOP",x+29,y+h-30,8,"white",True,"mm")
     elif kind == "radar":
         # Bahrain flag, raised radar dome, and two intercepted drone paths.
         fx,fy=x+10,y+16
@@ -109,13 +120,23 @@ def _scene_art(kind, x, y, w, h):
         d.rectangle((fx+15,fy,fx+41,fy+30),fill="white")
         for yy in range(fy,fy+30,6):
             d.polygon([(fx+15,yy),(fx+21,yy+3),(fx+15,yy+6)],fill="#c43f40")
-        bx,by=cx+4,y+h-17
-        d.rectangle((bx-48,by-5,bx+47,by+16),fill="#72828a")
-        d.rectangle((bx-39,by-43,bx+38,by-5),fill="#c9d2d3")
-        d.pieslice((bx-34,by-71,bx+34,by-2),180,360,fill="#fffdf8",outline="#426071",width=3)
+        bx,by=cx+4,y+h-23
+        # Elevated lattice tower and crisp white radome.
+        d.rectangle((bx-39,by-33,bx+38,by-5),fill="#bac7ca")
+        d.pieslice((bx-34,by-64,bx+34,by+3),180,360,fill="#fffdf8",outline="#426071",width=3)
+        d.line((bx-39,by-5,bx-50,by+21),fill="#657b84",width=3)
+        d.line((bx+38,by-5,bx+50,by+21),fill="#657b84",width=3)
+        d.line((bx-50,by+21,bx+50,by+21),fill="#657b84",width=3)
+        for yy in (by+1,by+9,by+17):
+            d.line((bx-47,yy,bx+47,yy-8),fill="#81949a",width=2)
+            d.line((bx+47,yy,bx-47,yy-8),fill="#81949a",width=2)
         # Dotted trails terminate at small burst marks above the radar.
         for points in (((x+w-17,y+12),(x+w-59,y+25),(x+w-101,y+18)),
                        ((x+w-20,y+38),(x+w-71,y+49),(x+w-112,y+43))):
+            dx0,dy0=points[0]
+            d.line((dx0-8,dy0,dx0+8,dy0),fill="#526977",width=2)
+            d.line((dx0,dy0-5,dx0,dy0+5),fill="#526977",width=2)
+            d.ellipse((dx0-3,dy0-3,dx0+3,dy0+3),fill="#405968")
             for ax,ay in points:
                 d.ellipse((ax-2,ay-2,ax+2,ay+2),fill=RED)
             ex,ey=points[-1]
@@ -125,14 +146,17 @@ def _scene_art(kind, x, y, w, h):
     elif kind == "cloud":
         # Globe behind a laptop; screen shows mail failure and a Teams-like bubble.
         gx,gy=x+57,y+42
-        d.ellipse((gx-40,gy-39,gx+40,gy+41),fill="#b8d0d7",outline="#507d91",width=3)
+        d.ellipse((gx-44,gy-43,gx+44,gy+45),fill="#d8e7e9")
+        d.ellipse((gx-39,gy-39,gx+39,gy+41),fill="#a9c8d1",outline="#507d91",width=3)
         d.arc((gx-22,gy-39,gx+22,gy+41),90,270,fill="#507d91",width=2)
         d.arc((gx-22,gy-39,gx+22,gy+41),270,90,fill="#507d91",width=2)
         d.arc((gx-39,gy-19,gx+39,gy+19),180,360,fill="#507d91",width=2)
         d.arc((gx-39,gy-19,gx+39,gy+19),0,180,fill="#507d91",width=2)
         lx,ly=x+111,y+22
+        d.rounded_rectangle((lx+3,ly+4,lx+130,ly+65),radius=7,fill="#263c49")
         d.rounded_rectangle((lx,ly,lx+126,ly+61),radius=6,fill="#354f60",outline="#253b49",width=2)
-        d.rectangle((lx+7,ly+7,lx+119,ly+51),fill="#90b2c0")
+        d.rectangle((lx+7,ly+7,lx+119,ly+51),fill="#a9c6cf")
+        d.rectangle((lx+7,ly+40,lx+119,ly+51),fill="#7fa3b1")
         d.rectangle((lx+24,ly+17,lx+76,ly+44),fill="white")
         d.line((lx+24,ly+17,lx+50,ly+33,lx+76,ly+17),fill="#567788",width=2)
         d.line((lx+61,ly+16,lx+79,ly+34),fill=RED,width=5)
@@ -142,62 +166,89 @@ def _scene_art(kind, x, y, w, h):
         d.polygon([(x+w-42,y+35),(x+w-47,y+44),(x+w-31,y+36)],fill="#7652a5")
         txt("T",x+w-33,y+20,16,"white",True,"mm")
     elif kind == "fire":
-        # Hospital facade with orange fire glow.
-        bx=x+16
-        d.rectangle((bx+7,y+17,bx+70,y+h-12),fill="#d3dce0")
-        for yy in (y+25,y+43,y+61):
-            for xx in (bx+13,bx+32,bx+51):
-                d.rectangle((xx,yy,xx+8,yy+7),fill="#6c91a1")
-        d.rectangle((bx+31,y+56,bx+43,y+77),fill="#f5f0e5")
-        # Flame cluster is intentionally kept inside the right half of the tile.
-        fx=x+w-28
-        d.polygon([(fx-19,y+h-10),(fx-14,y+41),(fx-8,y+52),(fx-2,y+33),(fx+5,y+45),(fx+10,y+h-10)],fill="#e35b35")
-        d.polygon([(fx-13,y+h-10),(fx-8,y+57),(fx-3,y+65),(fx+2,y+49),(fx+7,y+h-10)],fill="#ffbe54")
+        # Three-tone hospital block, red cross, and fire through an upper window.
+        d.rectangle((x+13,y+29,x+73,y+h-10),fill="#cad5d9")
+        d.rectangle((x+19,y+34,x+31,y+h-10),fill="#e3e9e8")
+        d.rectangle((x+34,y+37,x+69,y+h-10),fill="#b6c5ca")
+        for yy in (y+48,y+65,y+82):
+            for xx in (x+21,x+41,x+57):
+                d.rectangle((xx,yy,xx+8,yy+7),fill="#65889a")
+                d.line((xx+4,yy,xx+4,yy+7),fill="#dce6e7",width=1)
+        d.rectangle((x+31,y+13,x+53,y+35),fill="#fffdf8")
+        d.rectangle((x+38,y+16,x+46,y+32),fill=RED)
+        d.rectangle((x+34,y+20,x+50,y+28),fill=RED)
+        # A bright window and a contained pair of flame tongues.
+        d.rectangle((x+56,y+47,x+69,y+62),fill="#ffd37a")
+        fx=x+67
+        d.polygon([(fx-13,y+70),(fx-11,y+53),(fx-5,y+61),(fx,y+44),(fx+6,y+56),(fx+9,y+70)],fill="#d94e36")
+        d.polygon([(fx-7,y+70),(fx-4,y+60),(fx,y+65),(fx+4,y+54),(fx+7,y+70)],fill="#ffbd52")
     elif kind == "summit":
-        d.rectangle((x+15,y+54,x+w-15,y+69),fill="#53796c")
-        for xx in range(x+24,x+w-20,27):
-            d.line((xx,y+35,xx,y+54),fill="#455e56",width=3)
-            d.ellipse((xx-7,y+23,xx+7,y+37),fill="#455e56")
-        d.rounded_rectangle((cx-44,y+15,cx+44,y+45),radius=5,fill="#fffdf8",outline="#82968c")
-        txt("AI",cx,y+30,16,"#477a68",True,"mm")
+        # Twelve gold stars encircle an AI placard above a round summit table.
+        sx,sy=cx,y+38
+        for n in range(12):
+            import math
+            a=math.radians(n*30-90)
+            px=sx+math.cos(a)*29; py=sy+math.sin(a)*27
+            d.ellipse((px-2.2,py-2.2,px+2.2,py+2.2),fill="#d8a73e")
+        d.rounded_rectangle((cx-20,y+26,cx+20,y+49),radius=4,fill="#fffdf8",outline="#82968c",width=2)
+        txt("AI",cx,y+38,13,"#477a68",True,"mm")
+        d.ellipse((x+14,y+61,x+w-14,y+79),fill="#53796c")
+        d.ellipse((x+19,y+62,x+w-19,y+73),fill="#79a08e")
+        d.line((cx-22,y+75,cx-27,y+90),fill="#455e56",width=3)
+        d.line((cx+22,y+75,cx+27,y+90),fill="#455e56",width=3)
     elif kind == "tent":
-        for xx in range(x+15,x+w-15,26):
-            d.line((xx,y+11,xx-4,y+27),fill="#9bb8c3",width=2)
-        d.polygon([(x+21,y+h-10),(cx,y+18),(x+w-21,y+h-10)],fill="#ae9d83")
-        d.polygon([(cx,y+18),(cx,y+h-10),(x+w-21,y+h-10)],fill="#7d867e")
-        d.ellipse((x+18,y+12,x+35,y+29),fill="#fffdf8")
+        # Rainy shelter, open flap and a small heart-marked baby blanket.
+        for xx in range(x+10,x+w-8,18):
+            d.line((xx,y+8,xx-5,y+19),fill="#92b3c1",width=2)
+            d.ellipse((xx-2,y+18,xx+1,y+21),fill="#92b3c1")
+        d.polygon([(x+8,y+h-8),(cx,y+26),(x+w-8,y+h-8)],fill="#b7a48a")
+        d.polygon([(cx,y+26),(cx,y+h-8),(x+w-8,y+h-8)],fill="#827c70")
+        d.polygon([(cx,y+39),(cx-19,y+h-8),(cx+5,y+h-8)],fill="#534f4a")
+        d.rounded_rectangle((cx+11,y+59,cx+39,y+76),radius=3,fill="#e7d9bf")
+        d.polygon([(cx+19,y+64),(cx+23,y+60),(cx+27,y+64),(cx+31,y+60),(cx+35,y+64),(cx+27,y+72)],fill=RED)
     elif kind == "ships":
-        d.rectangle((x+10,cy+13,x+w-10,y+h-8),fill="#7da3af")
-        for xx in (x+39,cx+15,x+w-48):
-            d.polygon([(xx-24,cy+8),(xx+24,cy+8),(xx+14,cy+21),(xx-17,cy+21)],fill="#344d5a")
-            d.rectangle((xx-6,cy-12,xx+9,cy+7),fill="#f7f1e5")
-        d.line((x+25,y+18,x+60,y+18),fill=RED,width=3)
-        d.line((x+w-68,y+16,x+w-26,y+16),fill=RED,width=3)
+        d.rectangle((x+5,y+43,x+w-5,y+h-7),fill="#91afba")
+        # Island in the centre, surrounded by three grey patrol ships.
+        d.polygon([(cx-17,y+40),(cx-7,y+30),(cx+8,y+33),(cx+20,y+42),(cx+12,y+48),(cx-9,y+47)],fill="#91a184",outline="#677d72")
+        for xx,yy,scale in ((x+22,y+57,0),(x+w-24,y+57,0),(cx,y+79,1)):
+            hull=[(xx-18,yy),(xx+18,yy),(xx+12,yy+8),(xx-13,yy+8)]
+            d.polygon(hull,fill="#4d5d65",outline="#35454d")
+            d.rectangle((xx-5,yy-8,xx+7,yy),fill="#d5d9d6")
+            d.line((xx,yy-8,xx,yy-15),fill="#4d5d65",width=2)
     elif kind == "chart":
-        d.rectangle((x+9,y+11,x+w-9,y+h-11),fill="#fffdf8",outline="#c9c2b5",width=2)
-        d.line((x+17,y+h-22,x+35,y+h-34,x+52,y+h-29,x+71,y+28),fill=RED,width=3)
-        d.polygon([(x+67,y+33),(x+71,y+23),(x+77,y+31)],fill=RED)
-        txt("+6.5%",x+w-11,y+14,12,"#9a6a21",True,"ra")
+        d.rounded_rectangle((x+7,y+9,x+w-7,y+h-9),radius=4,fill="#fffdf8",outline="#c9c2b5",width=2)
+        for yy in (y+36,y+57,y+78):
+            d.line((x+14,yy,x+w-14,yy),fill="#e5e1d8",width=1)
+        d.line((x+13,y+h-20,x+32,y+h-36,x+50,y+h-31,x+76,y+34),fill="#bf4037",width=4)
+        d.polygon([(x+70,y+39),(x+76,y+28),(x+81,y+38)],fill="#bf4037")
+        d.rounded_rectangle((x+12,y+13,x+67,y+31),radius=4,fill="#f3e4b9")
+        txt("+6.5%",x+39,y+22,12,"#946820",True,"mm")
     elif kind == "chip":
         # Recognisable square package with pins and a separate falling indicator.
-        d.rounded_rectangle((cx-28,cy-27,cx+25,cy+26),radius=4,fill="#45718a")
+        d.rounded_rectangle((cx-28,cy-27,cx+25,cy+26),radius=4,fill="#34795d")
         d.rectangle((cx-17,cy-16,cx+14,cy+15),fill="#dce8eb")
-        txt("N",cx-1,cy,13,"#45718a",True,"mm")
+        d.rectangle((cx-13,cy-12,cx+10,cy+11),fill="#a7cbb4")
+        txt("N",cx-1,cy,13,"#34795d",True,"mm")
         for p in (-18,-6,6,18):
-            d.line((cx-38,cy+p,cx-28,cy+p),fill="#45718a",width=3)
-            d.line((cx+25,cy+p,cx+35,cy+p),fill="#45718a",width=3)
+            d.line((cx-38,cy+p,cx-28,cy+p),fill="#34795d",width=3)
+            d.line((cx+25,cy+p,cx+35,cy+p),fill="#34795d",width=3)
         for p in (-18,-6,6,18):
-            d.line((cx+p,cy-37,cx+p,cy-27),fill="#45718a",width=3)
-            d.line((cx+p,cy+26,cx+p,cy+36),fill="#45718a",width=3)
-        ax,ay=x+w-19,y+22
-        d.line((ax,ay,ax,ay+22),fill=RED,width=3)
-        d.polygon([(ax-6,ay+16),(ax+6,ay+16),(ax,ay+23)],fill=RED)
+            d.line((cx+p,cy-37,cx+p,cy-27),fill="#34795d",width=3)
+            d.line((cx+p,cy+26,cx+p,cy+36),fill="#34795d",width=3)
+        ax,ay=x+w-10,y+8
+        d.line((ax,ay,ax,ay+20),fill=RED,width=3)
+        d.polygon([(ax-6,ay+14),(ax+6,ay+14),(ax,ay+21)],fill=RED)
     elif kind == "smog":
         d.ellipse((x+w-43,y+12,x+w-18,y+37),fill="#dfa957")
         for xx, hh in ((x+17,37),(x+42,57),(x+73,44),(x+104,64),(x+137,40)):
             d.rectangle((xx,y+h-9-hh,xx+21,y+h-9),fill="#5a5049")
+            d.rectangle((xx+4,y+h-9-hh+12,xx+8,y+h-9-hh+17),fill="#b49c7e")
+            d.rectangle((xx+13,y+h-9-hh+23,xx+17,y+h-9-hh+28),fill="#b49c7e")
         for yy in (y+37,y+51,y+65):
             d.rectangle((x+5,yy,x+w-5,yy+9),fill="#ac9884")
+        if w>100:
+            d.rounded_rectangle((x+8,y+7,x+81,y+29),radius=5,fill="#44535a")
+            txt("AQI 334",x+44,y+18,12,"white",True,"mm")
 
 
 def lead(x, y, w, h, number, region, headline, dek, kind):
@@ -205,12 +256,12 @@ def lead(x, y, w, h, number, region, headline, dek, kind):
     d.ellipse((x+12,y+12,x+38,y+38),fill=RED)
     txt(str(number),x+25,y+25,14,"white",True,"mm")
     tag(region,x+47,y+14,REGION[region],11)
-    scene(kind,x+12,y+45,w-24,96)
+    scene(kind,x+12,y+43,w-24,110)
     f=fit(headline,FONT_HEAD,22,17,w-24)
-    d.text((x+12,y+148),headline,font=f,fill=INK)
+    d.text((x+12,y+162),headline,font=f,fill=INK)
     df=F(FONT_BODY,13)
     lines=wrap(dek,df,w-24)
-    yy=y+180
+    yy=y+193
     for ln in lines[:2]:
         d.text((x+12,yy),ln,font=df,fill=MUTED)
         yy+=17
@@ -222,7 +273,7 @@ def mini(x,y,w,h,region,headline,dek,kind):
     tag(region,x+108,y+9,REGION[region],10)
     f=fit(headline,FONT_HEAD,17,13,w-124)
     d.text((x+108,y+37),headline,font=f,fill=INK)
-    df=F(FONT_BODY,12)
+    df=F(FONT_BODY,13)
     lines=wrap(dek,df,w-124)
     yy=y+58
     max_lines=max(1,(h-62)//15)
@@ -240,7 +291,7 @@ txt("19 STORIES  ·  5 CONTINENTS",990,104,14,MUTED,True,"ra")
 d.line((32,132,992,132),fill=INK,width=2)
 
 g=12
-lead_y, lead_h = 145, 225
+lead_y, lead_h = 145, 239
 lead_w=(960-2*g)//3
 lead(32,lead_y,lead_w,lead_h,1,"US","FAA GROUNDS EVERY US FLIGHT",
      "A telecom outage hit all 22 air route control centers; officials see no sign of cyberattack.","plane")
@@ -250,8 +301,8 @@ lead(32+2*(lead_w+g),lead_y,lead_w,lead_h,3,"WORLD","MICROSOFT OUTAGE HITS 74 CO
      "Millions lose Outlook, Teams and Copilot in a worldwide service disruption.","cloud")
 
 # Six compact reports: two rows, consistent icon and text columns.
-txt("THE DAY, ACROSS SIX MORE FRONTS",32,386,16,INK,True)
-d.line((32,410,992,410),fill=RULE,width=1)
+txt("THE DAY, ACROSS SIX MORE FRONTS",32,400,16,INK,True)
+d.line((32,424,992,424),fill=RULE,width=1)
 mini_w=(960-g*2)//3
 mini_h=112
 items=[
@@ -264,20 +315,20 @@ items=[
 ]
 for i,(r,h,dek,k) in enumerate(items):
     col=i%3; row=i//3
-    mini(32+col*(mini_w+g),420+row*(mini_h+7),mini_w,mini_h,r,h,dek,k)
+    mini(32+col*(mini_w+g),432+row*(mini_h+7),mini_w,mini_h,r,h,dek,k)
 
 # South Asia gets a final compact visual alongside the same-day wire list.
-txt("ALSO ON 13 NOVEMBER",32,657,16,RED,True)
-d.line((32,682,992,682),fill=INK,width=1)
-card((32,687,271,952),10)
-scene("smog",43,698,217,88)
-tag("SOUTH ASIA",44,798,REGION["SOUTH ASIA"],10)
+txt("ALSO ON 13 NOVEMBER",32,668,16,RED,True)
+d.line((32,693,992,693),fill=INK,width=1)
+card((32,698,271,963),10)
+scene("smog",43,709,217,88)
+tag("SOUTH ASIA",44,809,REGION["SOUTH ASIA"],10)
 f=fit("DELHI AIR TURNS DANGEROUS",FONT_HEAD,19,15,215)
-d.text((44,827),"DELHI AIR TURNS DANGEROUS",font=f,fill=INK)
+d.text((44,838),"DELHI AIR TURNS DANGEROUS",font=f,fill=INK)
 small_dek="AQI 334: world's most polluted major city, overtaking Lahore."
 df=F(FONT_BODY,13)
 for i,ln in enumerate(wrap(small_dek,df,211)[:3]):
-    d.text((44,855+i*17),ln,font=df,fill=MUTED)
+    d.text((44,866+i*17),ln,font=df,fill=MUTED)
 
 also=[
     ("AFRICA","Nairobi building under construction collapses; at least 6 dead"),
@@ -293,17 +344,17 @@ also=[
 colx=(291,647)
 for i,(region,story) in enumerate(also):
     col=i//5; row=i%5
-    x=colx[col]; y=689+row*52
+    x=colx[col]; y=698+row*56
     # A compact colored region label reserves the same first line on every row.
-    d.text((x,y),region,font=F(FONT_BODY,10),fill=REGION[region])
-    f=fit(story,FONT_BODY,13,12,337)
+    d.text((x,y),region,font=F(FONT_BODY,13),fill=REGION[region])
+    f=fit(story,FONT_BODY,13,13,337)
     lines=wrap(story,f,337)
     for j,ln in enumerate(lines[:2]):
-        d.text((x,y+14+j*15),ln,font=f,fill=INK)
+        d.text((x,y+17+j*15),ln,font=f,fill=INK)
 
-d.line((32,967,992,967),fill=INK,width=1)
+d.line((32,978,992,978),fill=INK,width=1)
 footer="All stories reported 13 Nov 2026 · Sources: AP · Reuters · Al Jazeera · CNBC · Xinhua · NPR · Democracy Now! · Kyiv Independent"
 ff=fit(footer,FONT_BODY,13,12,960)
-d.text((512,976),footer,font=ff,fill=MUTED,anchor="mt")
+d.text((512,986),footer,font=ff,fill=MUTED,anchor="mt")
 
 im.save(ROOT / "entry.png", "JPEG", quality=92, optimize=True, progressive=False, subsampling=0)
